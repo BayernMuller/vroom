@@ -22,10 +22,6 @@ function warning() {
     log "WARNING: $1"
 }
 
-function input() {
-    log "- $1"
-}
-
 function install_brew {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 }
@@ -46,8 +42,7 @@ function check_apple_silicon {
 function check_brew_installed {
     if ! command -v brew &> /dev/null; then
         warning "Homebrew is not installed"
-        input "Do you want to install Homebrew? (y/n): "
-        read -r response
+        read -r -p "Do you want to install Homebrew? (y/n): " response < /dev/tty
         if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             install_brew
         else
@@ -61,8 +56,7 @@ function check_brew_installed {
 function check_ffmpeg_installed {
     if ! command -v ffmpeg &> /dev/null; then
         warning "FFmpeg is not installed"
-        input "Do you want to install FFmpeg? (y/n): "
-        read -r response
+        read -r -p "Do you want to install FFmpeg? (y/n): " response < /dev/tty
         if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             brew install ffmpeg
         else
@@ -86,8 +80,7 @@ function check_vrew_installed {
 }
 
 function confirm_continue {
-    input "Do you want to continue? (y/n): "
-    read -r response
+    read -r -p "Do you want to continue? (y/n): " response < /dev/tty
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         return 1
     else
@@ -156,8 +149,7 @@ function main()
     check_ffmpeg_installed
     check_vrew_installed
 
-    input "Which do you want to do? (install/uninstall): "
-    read -r response
+    read -r -p "Which do you want to do? (install/uninstall): " response < /dev/tty
 
     if [[ "$response" == "install" ]]; then
         install_patch

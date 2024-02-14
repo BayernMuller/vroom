@@ -1,17 +1,17 @@
 # vroom
 
-## What is vroom?
+### What is vroom?
 I found that the video editing software [Vrew](https://vrew.voyagerx.com/en/) uses x86_64 architecture FFmpeg.
 So I made a script to install the patch to use the Apple Silicon FFmpeg.
 
 For the detailed information, please visit my medium post (Korean): NOLINK
 
-## Benchmark
+### Benchmark
 ![benchmark](res/plot.png)
 * comparison of the performance of the vrew and patched FFmpeg on Apple M2 chip.
 * lower is better.
 
-## Before installation
+### Before installation
 vroom is not officially supported by Vrew. Use at your own risk.
 
 - vroom is only for Apple Silicon.
@@ -20,10 +20,10 @@ vroom is not officially supported by Vrew. Use at your own risk.
 - vroom replaces the original FFmpeg with the native FFmpeg for Apple Silicon.
 
 
-## Installation
+### Installation
 
 ```bash
-curl -s https://raw.githubusercontent.com/bayernmuller/vroom/vroom.sh | bash
+curl -s https://raw.githubusercontent.com/BayernMuller/vroom/main/vroom.sh | bash
 ```
 
 ```bash
