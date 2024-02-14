@@ -3,7 +3,7 @@
 ### What is vroom?
 * The video editing software [Vrew](https://vrew.voyagerx.com/en/) uses x86_64 architecture FFmpeg even on Apple Silicon. It's not optimized for Apple Silicon, so it's slow.
 * vroom is a script that patches the FFmpeg used by Vrew to the native FFmpeg for Apple Silicon. It replaces the original FFmpeg with the native FFmpeg for Apple Silicon.
-* For the detailed information, please visit my medium post (Korean): NOLINK
+* For the detailed information, please visit [my medium post (Korean)](https://medium.com/@bayernmuller/vrew-웹-기반-영상-편집-앱-분석-그리고-더-빠르게-만들기-5a7805588c74): 
 
 ### Benchmark
 ![benchmark](res/plot.png)
