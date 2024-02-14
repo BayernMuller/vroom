@@ -1,10 +1,9 @@
 # vroom
 
 ### What is vroom?
-I found that the video editing software [Vrew](https://vrew.voyagerx.com/en/) uses x86_64 architecture FFmpeg.
-So I made a script to install the patch to use the Apple Silicon FFmpeg.
-
-For the detailed information, please visit my medium post (Korean): NOLINK
+* The video editing software [Vrew](https://vrew.voyagerx.com/en/) uses x86_64 architecture FFmpeg even on Apple Silicon. It's not optimized for Apple Silicon, so it's slow.
+* vroom is a script that patches the FFmpeg used by Vrew to the native FFmpeg for Apple Silicon. It replaces the original FFmpeg with the native FFmpeg for Apple Silicon.
+* For the detailed information, please visit my medium post (Korean): NOLINK
 
 ### Benchmark
 ![benchmark](res/plot.png)
@@ -12,15 +11,14 @@ For the detailed information, please visit my medium post (Korean): NOLINK
 * lower is better.
 
 ### Before installation
-vroom is not officially supported by Vrew. Use at your own risk.
-
+- vroom is not officially supported by Vrew. Use at your own risk.
 - vroom is only for Apple Silicon.
 - vroom requires Homebrew and ARM64 FFmpeg. If you don't have it, vroom will ask you to install it.
 - vroom is not responsible for any damage caused by using the patch.
 - vroom replaces the original FFmpeg with the native FFmpeg for Apple Silicon.
 
 
-### Installation
+### Installation / Uninstallation
 
 ```bash
 curl -s https://raw.githubusercontent.com/BayernMuller/vroom/main/vroom.sh | bash
