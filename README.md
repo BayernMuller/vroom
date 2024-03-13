@@ -1,5 +1,7 @@
 <p align="center">
     <img src="res/vroom.png" width="400"/>
+    <br/>
+    <img src="https://svgshare.com/i/14GU.svg" title="vrew-license" alt="vrew-license"/>
 </p>
 
 <span align="center">
