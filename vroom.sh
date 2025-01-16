@@ -65,9 +65,9 @@ install_patch() {
     
     for program in ffmpeg ffprobe; do
         find "$VREW_PATH" -name "$program" | while read -r file; do
-            info "Moving $file to ${file}_original"
+            info "- Moving $file to ${file}_original"
             mv "$file" "${file}_original" || error "Failed to move $file to ${file}_original"
-            info "Linking $file to $(which $program)"
+            info "- Linking $file to $(which $program)"
             ln -s "$(which $program)" "$file" || error "Failed to link $file to $(which $program)"
         done
     done
@@ -80,9 +80,9 @@ uninstall_patch() {
 
     for program in ffmpeg ffprobe; do
         find "$VREW_PATH" -name "$program" | while read -r file; do
-            info "Unlinking $file"
+            info "- Unlinking $file"
             unlink "$file" || error "Failed to unlink $file"
-            info "Moving ${file}_original to $file"
+            info "- Moving ${file}_original to $file"
             mv "${file}_original" "$file" || error "Failed to move ${file}_original to $file"
         done
     done
