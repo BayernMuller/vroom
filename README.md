@@ -34,19 +34,10 @@
 curl -s https://raw.githubusercontent.com/BayernMuller/vroom/main/vroom.sh | bash
 ```
 
-```bash
-Checking environment
-SUCCESS: It's Apple Silicon
-SUCCESS: Homebrew is installed
-SUCCESS: FFmpeg is installed
-SUCCESS: Vrew is installed
-- Which do you want to do? (install/uninstall): install
-- Do you want to continue? (y/n): y
-Installing patch
-SUCCESS: Installed patch
-```
+<p align="center">
+    <img src="/assets/terminal.png"/>
+</p>
 
-* If you want to uninstall the patch, write `uninstall` instead of `install` when selecting the action.
 
 ### Benchmark
 <p align="center">
