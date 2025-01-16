@@ -1,7 +1,7 @@
 <p align="center">
-    <img src="res/vroom.png" width="400"/>
+    <img src="/assets/vroom.png" width="400"/>
     <br/>
-    <img src="https://svgshare.com/i/14GU.svg" title="vrew-license" alt="vrew-license"/>
+    <img src="/assets/logo_license.svg" title="vrew-license" alt="vrew-license"/>
 </p>
 
 <span align="center">
@@ -15,16 +15,17 @@
     <img src="https://img.shields.io/github/license/BayernMuller/vroom" alt="license">
 </p>
 
-### What is vroom?
-* The video editing software [Vrew](https://vrew.voyagerx.com/en/) uses x86_64 architecture FFmpeg even on Apple Silicon. It's not optimized for Apple Silicon, so it's slow.
-* vroom is a script that patches the FFmpeg used by Vrew to the native FFmpeg for Apple Silicon. It replaces the original FFmpeg with the native FFmpeg for Apple Silicon.
-* For the detailed information, please visit [my medium post](https://medium.com/@bayernmuller/vrew-웹-기반-영상-편집-앱-분석-그리고-더-빠르게-만들기-5a7805588c74) (Korean).
+### What is *vroom*?
+* [Vrew](https://vrew.voyagerx.com/en/) is a video editing software that uses x86_64 architecture FFmpeg on Apple Silicon, resulting in slower performance.
+* vroom is a script that updates [Vrew](https://vrew.voyagerx.com/en/)'s FFmpeg to a native Apple Silicon version, enhancing speed.
+* For more details, read [**my Medium post**](https://medium.com/@bayernmuller/vrew-웹-기반-영상-편집-앱-분석-그리고-더-빠르게-만들기-5a7805588c74) (Korean).
 
 ### Before installation
-- **Not officially supported** by Vrew. Use at your own risk.
-- Only for Apple Silicon Macs.
-- Requires Homebrew and ARM64 FFmpeg. If you don't have it, vroom will ask you to install it.
-- vroom is not responsible for any damage caused by using the patch.
+- **Not officially supported** by [Vrew](https://vrew.voyagerx.com/en/). Use at your own risk.
+- **[Homebrew](https://brew.sh/)** is required.
+- Compatible only with Apple Silicon Macs.
+
+- ***vroom*** is not liable for any damage from using the patch.
 
 ### Installation
 
@@ -49,10 +50,10 @@ SUCCESS: Installed patch
 
 ### Benchmark
 <p align="center">
-    <img src="res/plot.png" width="700"/><br/>
+    <img src="/assets/plot.png" width="700"/><br/>
     lower is better.
 </p>
 
 * comparison of the performance of the vrew and patched FFmpeg on Apple M2 chip.
-* vroom makes the video editing process about 2 times faster.
+* ***vroom*** makes the video editing process about **2 times faster**.
 
