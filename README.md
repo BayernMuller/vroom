@@ -38,6 +38,19 @@ curl -s https://raw.githubusercontent.com/BayernMuller/vroom/main/vroom.sh | bas
     <img src="/assets/terminal.png"/>
 </p>
 
+### Uninstallation
+
+* Run the same command as installation.
+* ***vroom*** will ask you to confirm the uninstallation.
+```
+ℹ INFO: Vroom patch is already installed! Do you want to uninstall it? (y/n)
+
+Enter your choice (y/n): y
+
+ℹ INFO: Uninstalling patch...
+✔ SUCCESS: Patch uninstalled!
+```
+
 
 ### Benchmark
 <p align="center">
