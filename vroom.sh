@@ -1,163 +1,132 @@
 #!/bin/bash
 
 VREW_PATH="$HOME/Library/Application Support/vrew"
-VGX_DIR="$VREW_PATH/ffmpeg_gpl_vgx_v5"
-LGPL_DIR="$VREW_PATH/ffmpeg_lgpl_v18"
 
-function log() {
-    now=$(date +"%Y-%m-%d %H:%M:%S")
-    echo "[$now] $1"
-}
+# UI 헬퍼 함수
+log() { echo " - $1"; }
+error() { echo "$(tput setaf 1)✖ ERROR:$(tput sgr0) $1"; exit 1; }
+success() { echo "$(tput setaf 2)✔ SUCCESS:$(tput sgr0) $1"; }
+warning() { echo "$(tput setaf 3)⚠ WARNING:$(tput sgr0) $1"; }
+info() { echo "$(tput setaf 4)ℹ INFO:$(tput sgr0) $1"; }
 
-function error() {
-    log "ERROR: $1" >&2
-    exit 1
-}
-
-function success() {
-    log "SUCCESS: $1"
-}
-
-function warning() {
-    log "WARNING: $1"
-}
-
-function install_brew {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-}
-
-function check_apple_silicon {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        if [[ $(uname -m) == "arm64" ]]; then
-            success "It's Apple Silicon"
-            return 1
-        else
-            error "It's not Apple Silicon"
-        fi
-    else
-        error "It's not macOS"
+check_apple_silicon() {
+    if [[ "$OSTYPE" == "darwin"* && $(uname -m) == "arm64" ]]; then
+        success "Apple Silicon detected!"
+        return 0
     fi
+    error "This script is only for macOS with Apple Silicon."
 }
 
-function check_brew_installed {
+check_brew_installed() {
     if ! command -v brew &> /dev/null; then
-        warning "Homebrew is not installed"
-        read -r -p "Do you want to install Homebrew? (y/n): " response < /dev/tty
-        if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            install_brew
-        else
-            error "Homebrew is required"
-        fi
+        warning "Homebrew is not installed!"
+        echo -e "\nTo install Homebrew, run:\n$(tput setaf 6)/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"$(tput sgr0)"
+        error "Homebrew is required."
     fi
-    success "Homebrew is installed"
-    return 1
+    success "Homebrew is installed."
 }
 
-function check_ffmpeg_installed {
+check_ffmpeg_installed() {
     if ! command -v ffmpeg &> /dev/null; then
-        warning "FFmpeg is not installed"
+        warning "FFmpeg is not installed!"
         read -r -p "Do you want to install FFmpeg? (y/n): " response < /dev/tty
-        if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            brew install ffmpeg
-        else
-            error "FFmpeg is required"
-        fi
+        [[ "$response" =~ ^[Yy]$ ]] && brew install ffmpeg || error "FFmpeg is required."
     fi
     
     if [[ $(file "$(which ffmpeg)") == *"arm64"* ]]; then
-        success "FFmpeg is installed"
+        success "FFmpeg (Apple Silicon) is installed."
     else
-        error "FFmpeg is not installed for Apple Silicon"
+        error "FFmpeg is not optimized for Apple Silicon!"
     fi
 }
 
-function check_vrew_installed {
-    if [[ -f "$VREW_PATH/ffmpeg_gpl_vgx_v5/ffmpeg" ]]; then
-        success "Vrew is installed"
+check_vrew_installed() {
+    if [[ -d "$VREW_PATH" && -d "/Applications/Vrew.app" ]]; then
+        success "Vrew is installed."
     else
-        error "Vrew is not installed"
+        error "Vrew is not installed."
     fi
 }
 
-function confirm_continue {
-    read -r -p "Do you want to continue? (y/n): " response < /dev/tty
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+check_patch_installed() {
+    if find "$VREW_PATH" -name "ffmpeg" -o -name "ffprobe" | while read -r file; do
+        if [ ! -L "$file" ]; then
+            return 1
+        fi
+    done; then
+        return 0
+    else
         return 1
-    else
-        error "Aborted"
     fi
 }
 
-function install_patch {
-    confirm_continue
-    log "Installing patch"
+install_patch() {
+    info "Installing patch..."
     
-    mv "$VGX_DIR/ffmpeg" "$VGX_DIR/ffmpeg_original"
-    mv "$LGPL_DIR/ffmpeg" "$LGPL_DIR/ffmpeg_original"
-    mv "$LGPL_DIR/ffprobe" "$LGPL_DIR/ffprobe_original"
+    for program in ffmpeg ffprobe; do
+        find "$VREW_PATH" -name "$program" | while read -r file; do
+            info "Moving $file to ${file}_original"
+            mv "$file" "${file}_original" || error "Failed to move $file to ${file}_original"
+            info "Linking $file to $(which $program)"
+            ln -s "$(which $program)" "$file" || error "Failed to link $file to $(which $program)"
+        done
+    done
 
-    ln -s "$(which ffmpeg)" "$VGX_DIR/ffmpeg"
-    ln -s "$(which ffmpeg)" "$LGPL_DIR/ffmpeg"
-    ln -s "$(which ffprobe)" "$LGPL_DIR/ffprobe"
-
-    success "Installed patch"
+    success "Patch installed!"
 }
 
-function uninstall_patch {
-    confirm_continue
-    log "Uninstalling patch"
-    if [[ -L "$VGX_DIR/ffmpeg" ]]; then
-        unlink "$VGX_DIR/ffmpeg"
-        if [[ -f "$VGX_DIR/ffmpeg_original" ]]; then
-            mv "$VGX_DIR/ffmpeg_original" "$VGX_DIR/ffmpeg"
-        else
-            error "Original ffmpeg is not found"
-        fi
-    else
-        error "patch is not installed"
-    fi
+uninstall_patch() {
+    info "Uninstalling patch..."
 
-    if [[ -L "$LGPL_DIR/ffmpeg" ]]; then
-        unlink "$LGPL_DIR/ffmpeg"
-        if [[ -f "$LGPL_DIR/ffmpeg_original" ]]; then
-            mv "$LGPL_DIR/ffmpeg_original" "$LGPL_DIR/ffmpeg"
-        else
-            error "Original ffmpeg is not found"
-        fi
-    else
-        error "patch is not installed"
-    fi
-
-    if [[ -L "$LGPL_DIR/ffprobe" ]]; then
-        unlink "$LGPL_DIR/ffprobe"
-        if [[ -f "$LGPL_DIR/ffprobe_original" ]]; then
-            mv "$LGPL_DIR/ffprobe_original" "$LGPL_DIR/ffprobe"
-        else
-            error "Original ffprobe is not found"
-        fi
-    else
-        error "patch is not installed"
-    fi    
-    success "Uninstalled patch"
+    for program in ffmpeg ffprobe; do
+        find "$VREW_PATH" -name "$program" | while read -r file; do
+            info "Unlinking $file"
+            unlink "$file" || error "Failed to unlink $file"
+            info "Moving ${file}_original to $file"
+            mv "${file}_original" "$file" || error "Failed to move ${file}_original to $file"
+        done
+    done
+    
+    success "Patch uninstalled!"
 }
 
-function main()
-{
-    log "Checking environment"
+main() {
+    clear
+    tput setaf 6
+    echo 
+    echo "░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░░▒▓██████████████▓▒░  "
+    echo "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ "
+    echo " ░▒▓█▓▒▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ "
+    echo " ░▒▓█▓▒▒▓█▓▒░░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ "
+    echo "  ░▒▓█▓▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ "
+    echo "  ░▒▓█▓▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ "
+    echo "   ░▒▓██▓▒░  ░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░ "
+    echo
+    echo "                  https://github.com/bayernmuller/vroom"
+    echo 
+    echo "                     Vroom will make you Vrew faster!"
+    echo
+    tput sgr0
+    
+    info "Checking system compatibility..."
     check_apple_silicon
     check_brew_installed
     check_ffmpeg_installed
     check_vrew_installed
-
-    read -r -p "Which do you want to do? (install/uninstall): " response < /dev/tty
-
-    if [[ "$response" == "install" ]]; then
-        install_patch
-    elif [[ "$response" == "uninstall" ]]; then
-        uninstall_patch
+    
+    if check_patch_installed; then
+        echo 
+        info "Vroom patch is already installed! Do you want to uninstall it? (y/n)"
+        echo
+        read -r -p "Enter your choice (y/n): " response < /dev/tty
+        [[ "$response" =~ ^[Yy]$ ]] && uninstall_patch || error "Operation aborted."
     else
-        error "Invalid command"
-    fi
+        echo 
+        info "Vroom patch is not installed. Do you want to install it? (y/n)"
+        echo
+        read -r -p "Enter your choice (y/n): " response < /dev/tty
+        [[ "$response" =~ ^[Yy]$ ]] && install_patch || error "Operation aborted."
+    fi   
 }
 
 main
